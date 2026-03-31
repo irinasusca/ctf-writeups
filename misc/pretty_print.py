@@ -9,20 +9,53 @@ from rich.syntax import Syntax
 from rich.panel import Panel
 from rich.theme import Theme
 
-#in case you want to customize your own theme
+#in case you want to customize your own theme, or choose one I made, just modify the "selection" var
 
-custom_theme = Theme({
-    "info": "hot_pink",
-    "url": "pale_violet_red1 underline",
-    "status_ok": "spring_green3",
-    "status_error": "deep_pink3",
-    "border_normal": "magenta",
-    "border_flag": "hot_pink",
-    "flag_text": "blink bold hot_pink",
-    "lexer_info": "dim"
-})
+themes = {
+    "default": {
+        "rich": Theme({
+            "status_ok": "green",
+            "status_error": "red",
+            "url_dim": "dim",
+            "border_normal": "blue",
+            "border_flag": "bright_magenta",
+            "flag_text": "blink bold yellow",
+            "lexer_info": "dim"
+        }),
+        "syntax": "monokai"
+    },
+    "pink": {
+        "rich": Theme({
+   	    "info": "hot_pink",
+    	    "url": "pale_violet_red1 underline",
+    	    "status_ok": "spring_green3",
+    	    "status_error": "deep_pink3",
+    	    "border_normal": "magenta",
+    	    "border_flag": "hot_pink",
+    	    "flag_text": "blink bold hot_pink",
+    	    "lexer_info": "dim"
+	}),
+        "syntax": "dracula"
+    },
+    "arctic": {
+        "rich": Theme({
+            "status_ok": "medium_spring_green",  
+            "status_error": "indian_red",        
+            "url_dim": "light_sky_blue1 underline dim",
+            "border_normal": "steel_blue",       
+            "border_flag": "cyan1",              
+            "flag_text": "bold black on cyan1", 
+            "lexer_info": "grey70"
+        }),
+        "syntax": "nord"  
+    }
+}
 
-console = Console(theme=custom_theme)
+# SELECT YOUR THEME HERE!
+selection = "pink"  # "pink" or "default" etc
+active = themes[selection]
+console = Console(theme=active["rich"])
+
 
 def pretty_print(res):
 
@@ -35,11 +68,11 @@ def pretty_print(res):
     lexer = "json" if "json" in ctype else "html" if "html" in ctype else "text"
 
     # look for the flag with regex. 
-    flag_patterns = r"(ctf|unr|ocsc|ocsj|rocsc|flag|\w+\{.*?\})"
+    flag_patterns = r"\b(ctf|unr|ocsc|ocsj|rocsc|flag)\{.*?\}"
     found_flag = re.search(flag_patterns, res.text, re.IGNORECASE)
 
     # prepare the Body
-    syntax = Syntax(res.text, lexer, theme="dracula", word_wrap=True)
+    syntax = Syntax(res.text, lexer, theme=active["syntax"], word_wrap=True)
     
     if found_flag:
         title = f"[flag_text]🚩 POTENTIAL FLAG DETECTED: {found_flag.group(0)}[/flag_text]"
